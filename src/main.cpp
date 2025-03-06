@@ -48,9 +48,7 @@ void loop()
 {
   debug.print(">Red:");
   debug.println(particleSensor.getRed());
-  debug.print(">IR");
+  debug.print(">IR:");
   debug.println(particleSensor.getIR());
-  debug.print(">G:");
-  debug.println(particleSensor.getGreen());
   
 }
