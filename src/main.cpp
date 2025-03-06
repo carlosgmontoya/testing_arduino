@@ -46,10 +46,11 @@ void setup()
 
 void loop()
 {
-  debug.print(particleSensor.getRed());
-  debug.print(", ");
-  debug.print(particleSensor.getIR());
-  debug.print(",");
-  debug.print(particleSensor.getGreen());
-  debug.println();
+  debug.print(">Red:");
+  debug.println(particleSensor.getRed());
+  debug.print(">IR");
+  debug.println(particleSensor.getIR());
+  debug.print(">G:");
+  debug.println(particleSensor.getGreen());
+  
 }
