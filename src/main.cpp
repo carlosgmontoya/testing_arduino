@@ -1,39 +1,55 @@
 #include <Arduino.h>
 
 /*
-  Blink
+  MAX30105 Breakout: Output all the raw Red/IR/Green readings
+  By: Nathan Seidle @ SparkFun Electronics
+  Date: October 2nd, 2016
+  https://github.com/sparkfun/MAX30105_Breakout
 
-  Turns an LED on for one second, then off for one second, repeatedly.
+  Outputs all Red/IR/Green values.
 
-  Most Arduinos have an on-board LED you can control. On the UNO, MEGA and ZERO
-  it is attached to digital pin 13, on MKR1000 on pin 6. LED_BUILTIN is set to
-  the correct LED pin independent of which board is used.
-  If you want to know what pin the on-board LED is connected to on your Arduino
-  model, check the Technical Specs of your board at:
-  https://www.arduino.cc/en/Main/Products
+  Hardware Connections (Breakoutboard to Arduino):
+  -5V = 5V (3.3V is allowed)
+  -GND = GND
+  -SDA = A4 (or SDA)
+  -SCL = A5 (or SCL)
+  -INT = Not connected
 
-  modified 8 May 2014
-  by Scott Fitzgerald
-  modified 2 Sep 2016
-  by Arturo Guadalupi
-  modified 8 Sep 2016
-  by Colby Newman
+  The MAX30105 Breakout can handle 5V or 3.3V I2C logic. We recommend powering the board with 5V
+  but it will also run at 3.3V.
 
-  This example code is in the public domain.
-
-  https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
+  This code is released under the [MIT License](http://opensource.org/licenses/MIT).
 */
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+#include <Wire.h>
+#include "MAX30105.h"
+
+MAX30105 particleSensor;
+
+#define debug Serial //Uncomment this line if you're using an Uno or ESP
+//#define debug SerialUSB //Uncomment this line if you're using a SAMD21
+
+void setup()
+{
+  debug.begin(9600);
+  debug.println("MAX30105 Basic Readings Example");
+
+  // Initialize sensor
+  if (particleSensor.begin() == false)
+  {
+    debug.println("MAX30105 was not found. Please check wiring/power. ");
+    while (1);
+  }
+
+  particleSensor.setup(); //Configure sensor. Use 6.4mA for LED drive
 }
 
-// the loop function runs over and over again forever
-void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
-  delay(500);                      // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
-  delay(500);                      // wait for a second
+void loop()
+{
+  debug.print(particleSensor.getRed());
+  debug.print(", ");
+  debug.print(particleSensor.getIR());
+  debug.print(",");
+  debug.print(particleSensor.getGreen());
+  debug.println();
 }
