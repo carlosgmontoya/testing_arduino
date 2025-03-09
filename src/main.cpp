@@ -23,12 +23,14 @@
 
 #include <Wire.h>
 #include "MAX30105.h"
+#include "PPGfilter.h"
 
 MAX30105 particleSensor;
 
 #define debug Serial //Uncomment this line if you're using an Uno or ESP
 //#define debug SerialUSB //Uncomment this line if you're using a SAMD21
 
+/*
 //EMA filter
 float EMA_ALPHA_ = 0.05;
 float EMA_ALPHA = 0.2;
@@ -49,10 +51,14 @@ int EMAHighPassFilter(int value)
 
   return EMA_HP;
 }
+*/
+
+PPGfilter filter;
 
 void setup()
 {
   debug.begin(9600);
+  filter.init();
 
   // Initialize sensor
   if (particleSensor.begin() == false)
@@ -74,11 +80,11 @@ void loop()
   
 
   int ppg = particleSensor.getIR();
-  int filterHP = EMAHighPassFilter(ppg);
-  int filterLP = EMALowPassFilter(filterHP);
+
+  int filterHP = filter.EMAFilter(ppg);
 
   debug.print(">filterLP:");
-  debug.println(filterLP);
+  debug.println(filterHP);
 
 
 }
