@@ -29,15 +29,35 @@ MAX30105 particleSensor;
 #define debug Serial //Uncomment this line if you're using an Uno or ESP
 //#define debug SerialUSB //Uncomment this line if you're using a SAMD21
 
+//EMA filter
+float EMA_ALPHA_ = 0.05;
+float EMA_ALPHA = 0.2;
+int EMA_LP = 0;
+int EMA_HP = 0;
+int EMA_LP_ = 0;
+
+int EMALowPassFilter(int value)
+{
+  EMA_LP_ = EMA_ALPHA_ * value + (1 - EMA_ALPHA_) * EMA_LP_;
+  return EMA_LP_;
+}
+
+int EMAHighPassFilter(int value)
+{
+  EMA_LP = EMA_ALPHA * value + (1 - EMA_ALPHA) * EMA_LP;
+  EMA_HP = value - EMA_LP;
+
+  return EMA_HP;
+}
+
 void setup()
 {
   debug.begin(9600);
-  debug.println("MAX30105 Basic Readings Example");
 
   // Initialize sensor
   if (particleSensor.begin() == false)
   {
-    debug.println("MAX30105 was not found. Please check wiring/power. ");
+    debug.println("Sensor was not found. Please check wiring/power. ");
     while (1);
   }
 
@@ -46,9 +66,19 @@ void setup()
 
 void loop()
 {
-  debug.print(">Red:");
-  debug.println(particleSensor.getRed());
+
+//  debug.print(">Red:");
+//  debug.println(particleSensor.getRed());
   debug.print(">IR:");
   debug.println(particleSensor.getIR());
   
+
+  int ppg = particleSensor.getIR();
+  int filterHP = EMAHighPassFilter(ppg);
+  int filterLP = EMALowPassFilter(filterHP);
+
+  debug.print(">filterLP:");
+  debug.println(filterLP);
+
+
 }
