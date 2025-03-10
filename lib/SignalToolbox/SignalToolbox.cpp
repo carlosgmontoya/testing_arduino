@@ -39,6 +39,9 @@ int SignalToolbox::Frequhr(int filter2){
         conthr++;
     }
 
+    xn_2 = xn_1;
+    xn_1 = xn;
+
     return freqhr;
 }
 
