@@ -48,18 +48,42 @@ int SignalToolbox::Frequhr(int filter2){
 int SignalToolbox::Averagehr(int filter3){
     this->filter3 = filter3;
 
-    //Average
+    //Peak and valley detector
     xp = filter3;
 
-    // hr prom
-    datahr[0]=xp;
-    for(int ihr=0; ihr<9; ihr++)
+    // Valley (cambia a pendiente positiva)
+    if(xp - xp_1 > 0 && xp_1 - xp_2 <= 0)
     {
-        datahr[9-ihr]=datahr[8-ihr];
-        sumahr = sumahr + datahr[9-ihr];
+        if(contphr >= 1)
+        {
+            endphr = millis();
+            periodphr = endphr - startphr;
+            freqphr = 60000 / periodphr;
+
+
+            // hr prom
+            datahr[0]=freqphr;
+            for(int ihr=0; ihr<9; ihr++)
+            {
+                datahr[9-ihr]=datahr[8-ihr];
+                sumahr = sumahr + datahr[9-ihr];
+            }
+            promhr=sumahr/9;
+            sumahr=0;
+
+            contphr = 0;
+            startphr = millis();
+        }
+    }    
+    
+    // Pico (cambia a pendiente negativa)
+    if(xp - xp_1 <0 && xp_1 - xp_2 >= 0)
+    {
+        contphr++;
     }
-    promhr=sumahr/9;
-    sumahr=0;
+
+    xp_2 = xp_1;
+    xp_1 = xp;
 
     return promhr;
 }

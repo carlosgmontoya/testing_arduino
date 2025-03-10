@@ -97,7 +97,7 @@ void loop()
   Serial.print(">freqhr:");
   Serial.println(freqhr);
 
-  int promhr = filtered.Averagehr(freqhr);
+  int promhr = filtered.Averagehr(filteredSign);
   Serial.print(">promhr:");
   Serial.println(promhr);
 }
