@@ -6,7 +6,7 @@
 class PPGfilter{
     private:
         //EMA filter
-        float EMA_ALPHA_ = 0.05;
+        float EMA_ALPHA_ = 0.4;
         float EMA_ALPHA = 0.2;
         int EMA_LP = 0;
         int EMA_HP = 0;
@@ -14,8 +14,7 @@ class PPGfilter{
         int signal;
     public:
         PPGfilter();
-        ~PPGfilter();
-        void init();
+        void begin();
         int EMAFilter(int signal);
 };
 

@@ -54,14 +54,14 @@ int EMAHighPassFilter(int value)
 }
 */
 
-PPGfilter filter;
-SignalToolbox filtered;
+PPGfilter filterIR;
+SignalToolbox featureIR;
 
 void setup()
 {
   debug.begin(9600);
-  filter.init();
-  filtered.init();
+  filterIR.begin();
+  featureIR.begin();
 
 
   // Initialize sensor
@@ -79,25 +79,33 @@ void loop()
 
 //  debug.print(">Red:");
 //  debug.println(particleSensor.getRed());
-  debug.print(">IR:");
-  debug.println(particleSensor.getIR());
-  
-
- // int ppg = particleSensor.getIR();
- // int filterSignal = filter.EMAFilter(ppg);
+//  int ppg = particleSensor.getIR();
+//  int filterSignal = filter.EMAFilter(ppg);
  
 
  ////////////////TESTING HR BEGIN
-  int ppg = particleSensor.getIR();
-  int filteredSign = filter.EMAFilter(ppg);
-  debug.print(">Filtered signal:");
-  debug.println(filteredSign);
+  int IR = particleSensor.getIR();
+  debug.print(">IR:");
+  debug.println(IR);
+  int signalIR = filterIR.EMAFilter(IR);
+  debug.print(">Signal IR:");
+  debug.println(signalIR);
 
-  int freqhr = filtered.Frequhr(filteredSign); 
+  int freqhr = featureIR.Frequhr(signalIR); 
   Serial.print(">freqhr:");
   Serial.println(freqhr);
 
-  int promhr = filtered.Averagehr(filteredSign);
+  int promhr = featureIR.Averagehr(signalIR);
   Serial.print(">promhr:");
   Serial.println(promhr);
+
+  //////////////TESTING SPO2
+  int ampIR = featureIR.Amplitudehr(signalIR);
+  Serial.print(">ampIR:");
+  Serial.println(ampIR);
+
+  int intIR = featureIR.Intensityhr(signalIR);
+  Serial.print(">intIR:");
+  Serial.println(intIR);
+
 }

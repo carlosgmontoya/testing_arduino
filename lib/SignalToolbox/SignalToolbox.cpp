@@ -6,11 +6,7 @@ SignalToolbox::SignalToolbox(){
 
 }
 
-SignalToolbox::~SignalToolbox(){
-
-}
-
-void SignalToolbox::init(){
+void SignalToolbox::begin(){
 
 }
 
@@ -86,4 +82,66 @@ int SignalToolbox::Averagehr(int filter3){
     xp_1 = xp;
 
     return promhr;
+}
+
+int SignalToolbox::Amplitudehr(int filter4){
+    this->filter4 = filter4;
+
+    //Peak and valley detector
+    xa = filter4;
+
+    // Valley (cambia a pendiente positiva)
+    if(xa - xa_1 > 0 && xa_1 - xa_2 <= 0)
+    {
+        pahr = xa_1;
+        contra++;
+    }    
+    
+    // Pico (cambia a pendiente negativa)
+    if(xa - xa_1 <0 && xa_1 - xa_2 >= 0)
+    {
+        if(contra >= 1)
+        {
+            pbhr = xa_1;
+            amphr = pbhr - pahr;
+            contra = 0;
+        }
+    }
+
+    xa_2 = xa_1;
+    xa_1 = xa;
+
+    return amphr;
+
+}
+
+int SignalToolbox::Intensityhr(int filter5){
+    this->filter5 = filter5;
+
+    //Peak and valley detector
+    xb = filter5;
+
+    // Valley (cambia a pendiente positiva)
+    if(xb - xb_1 > 0 && xb_1 - xb_2 <= 0)
+    {
+        pchr = xb_1;
+        contrb++;
+    }    
+    
+    // Pico (cambia a pendiente negativa)
+    if(xb - xb_1 <0 && xb_1 - xb_2 >= 0)
+    {
+        if(contrb >= 1)
+        {
+            pdhr = xb_1;
+            inthr = (pchr + pdhr)/2;
+            contrb = 0;
+        }
+    }
+
+    xb_2 = xb_1;
+    xb_1 = xb;
+
+    return inthr;
+
 }

@@ -14,6 +14,16 @@ class SignalToolbox{
         int xp_1 = 0;
         int xp_2 = 0;
 
+        // Peak detector
+        int xa = 0;
+        int xa_1 = 0;
+        int xa_2 = 0;
+
+        // Peak detector
+        int xb = 0;
+        int xb_1 = 0;
+        int xb_2 = 0;
+
         // Peaks of peaks (intensity)
         int pn = 0;
         int pn_1 = 0;
@@ -48,14 +58,20 @@ class SignalToolbox{
         int perioda = 0;
         int freqa = 0;
         int contra = 0;
+        int pahr = 0;
+        int pbhr = 0;
+        int amphr = 0;
 
-        // Frequency of frequency
+        // Frequency of intensity
         int startb = 0;
         int endb = 0;
         int halfb = 0;
         int periodb = 0;
         int freqb = 0;
         int contrb = 0;
+        int pchr = 0;
+        int pdhr = 0;
+        int inthr = 0;
 
         // Frequency of intensity
         int startc = 0;
@@ -76,9 +92,7 @@ class SignalToolbox{
         int periodphr = 0;
         int freqphr = 0;
         int contphr = 0;
-        int pahr = 0;
-        int pbhr = 0;
-        int amphr = 0;
+
         int conta = 0;
         int periodhr_1=0;
         int datahr[10]={0,0,0,0,0,0,0,0,0,0};
@@ -87,12 +101,15 @@ class SignalToolbox{
         int ihr=0;
         int filter2;
         int filter3;
+        int filter4;
+        int filter5;
     public:
         SignalToolbox();
-        ~SignalToolbox();
-        void init();
+        void begin();
         int Frequhr(int filter2);
         int Averagehr(int filter3);
+        int Amplitudehr(int filter4);
+        int Intensityhr(int filter5);
 };
 
 #endif
