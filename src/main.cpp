@@ -91,6 +91,7 @@ void loop()
   debug.print(">Signal IR:");
   debug.println(signalIR);
 
+  /*
   int freqhr = featureIR.Frequhr(signalIR); 
   Serial.print(">freqhr:");
   Serial.println(freqhr);
@@ -107,5 +108,5 @@ void loop()
   int intIR = featureIR.Intensityhr(signalIR);
   Serial.print(">intIR:");
   Serial.println(intIR);
-
+*/
 }
