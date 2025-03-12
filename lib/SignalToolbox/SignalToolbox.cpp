@@ -10,6 +10,7 @@ void SignalToolbox::begin(){
 
 }
 
+/*
 int SignalToolbox::Frequhr(int filter2){
     this->filter2 = filter2;
 
@@ -41,7 +42,9 @@ int SignalToolbox::Frequhr(int filter2){
     return freqhr;
 }
 
-int SignalToolbox::Averagehr(int filter3){
+*/
+
+void SignalToolbox::Averagehr(int filter3){
     this->filter3 = filter3;
 
     //Peak and valley detector
@@ -81,9 +84,17 @@ int SignalToolbox::Averagehr(int filter3){
     xp_2 = xp_1;
     xp_1 = xp;
 
-    return promhr;
+//    return promhr;
 }
 
+int SignalToolbox::GetFreqhr()
+{
+    return freqphr;
+}
+int SignalToolbox::GetAvehr()
+{
+    return promhr;
+}
 int SignalToolbox::Amplitudehr(int filter4){
     this->filter4 = filter4;
 

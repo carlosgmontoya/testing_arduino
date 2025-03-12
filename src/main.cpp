@@ -61,9 +61,6 @@ SignalToolbox featureIR;
 void setup()
 {
   debug.begin(9600);
-  filterIR.begin();
-  featureIR.begin();
-
 
   // Initialize sensor
   if (particleSensor.begin() == false)
@@ -95,11 +92,13 @@ void loop()
 
  ////////////////TESTING HR BEGIN
 
-  int freqhr = featureIR.Frequhr(signalIR); 
+  featureIR.Averagehr(signalIR);
+  
+  int freqhr = featureIR.GetFreqhr();
   Serial.print(">freqhr:");
   Serial.println(freqhr);
 
-  int promhr = featureIR.Averagehr(signalIR);
+  int promhr = featureIR.GetAvehr();
   Serial.print(">promhr:");
   Serial.println(promhr);
 

@@ -6,7 +6,7 @@ PPGfilter::PPGfilter(){
 
 }
 
-void PPGfilter::begin(){
+PPGfilter::~PPGfilter(){
 
 }
 
