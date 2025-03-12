@@ -57,6 +57,8 @@ int EMAHighPassFilter(int value)
 PPGfilter filterIR;
 PPGfilter filterRed;
 SignalToolbox featureIR;
+SignalToolbox featureRed;
+int SpO2 = 0;
 
 void setup()
 {
@@ -81,6 +83,7 @@ void loop()
   int signalIR = filterIR.EMAFilter(IR);
   debug.print(">Signal IR:");
   debug.println(signalIR);
+  featureIR.SetSignal(signalIR);
 
   int Red = particleSensor.getRed();
   debug.print(">Red:");
@@ -88,27 +91,49 @@ void loop()
   int signalRed = filterRed.EMAFilter(Red);
   debug.print(">Signal Red:");
   debug.println(signalRed); 
+  featureRed.SetSignal(signalRed);
 
-
- ////////////////TESTING HR BEGIN
-
-  featureIR.Averagehr(signalIR);
-  
-  int freqhr = featureIR.GetFreqhr();
+ //////////////// HR 
+  int freqhr = featureIR.GetFreq();
   Serial.print(">freqhr:");
   Serial.println(freqhr);
 
-  int promhr = featureIR.GetAvehr();
+  int promhr = featureIR.GetAve();
   Serial.print(">promhr:");
   Serial.println(promhr);
 
-  //////////////TESTING SPO2
-  int ampIR = featureIR.GetAmphr();
+  ////////////// SPO2
+  int ampIR = featureIR.GetAmp();
   Serial.print(">ampIR:");
   Serial.println(ampIR);
 
-  int intIR = featureIR.GetInthr();
+  int intIR = featureIR.GetInt();
   Serial.print(">intIR:");
   Serial.println(intIR);
+
+  int ampRed = featureRed.GetAmp();
+  Serial.print(">ampRed:");
+  Serial.println(ampRed);
+
+  int intRed = featureRed.GetInt();
+  Serial.print(">intRed:");
+  Serial.println(intRed);  
+
+  if(ampRed > 0 && intIR >0 && ampIR > 0 && intIR >0)
+  {
+    float R = (float)(ampRed * intIR)/(intRed*ampIR);
+    Serial.print(">R:");
+    Serial.println(R);  
+ 
+    SpO2 = 110 - 25*R;
+
+  }
+
+  if(SpO2 > 100)
+  {
+    SpO2 = 100;
+  }
+  Serial.print(">SpO2:");
+  Serial.println(SpO2);  
 
 }

@@ -107,11 +107,11 @@ class SignalToolbox{
         SignalToolbox();
         void begin();
 //        int Frequhr(int filter2);
-        void Averagehr(int filter3);
-        int GetFreqhr();
-        int GetAvehr();
-        int GetAmphr();
-        int GetInthr();
+        void SetSignal(int filter3);
+        int GetFreq();
+        int GetAve();
+        int GetAmp();
+        int GetInt();
 };
 
 #endif

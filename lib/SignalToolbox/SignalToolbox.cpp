@@ -44,7 +44,7 @@ int SignalToolbox::Frequhr(int filter2){
 
 */
 
-void SignalToolbox::Averagehr(int filter3){
+void SignalToolbox::SetSignal(int filter3){
     this->filter3 = filter3;
 
     //Peak and valley detector
@@ -113,21 +113,21 @@ void SignalToolbox::Averagehr(int filter3){
 //    return promhr;
 }
 
-int SignalToolbox::GetFreqhr()
+int SignalToolbox::GetFreq()
 {
     return freqphr;
 }
 
-int SignalToolbox::GetAvehr()
+int SignalToolbox::GetAve()
 {
     return promhr;
 }
 
-int SignalToolbox::GetAmphr()
+int SignalToolbox::GetAmp()
 {
     return amphr;
 }
-int SignalToolbox::GetInthr()
+int SignalToolbox::GetInt()
 {
     return inthr;
 }
