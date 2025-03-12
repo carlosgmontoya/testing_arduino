@@ -55,6 +55,7 @@ int EMAHighPassFilter(int value)
 */
 
 PPGfilter filterIR;
+PPGfilter filterRed;
 SignalToolbox featureIR;
 
 void setup()
@@ -77,13 +78,6 @@ void setup()
 void loop()
 {
 
-//  debug.print(">Red:");
-//  debug.println(particleSensor.getRed());
-//  int ppg = particleSensor.getIR();
-//  int filterSignal = filter.EMAFilter(ppg);
- 
-
- ////////////////TESTING HR BEGIN
   int IR = particleSensor.getIR();
   debug.print(">IR:");
   debug.println(IR);
@@ -91,7 +85,16 @@ void loop()
   debug.print(">Signal IR:");
   debug.println(signalIR);
 
-  /*
+  int Red = particleSensor.getRed();
+  debug.print(">Red:");
+  debug.println(Red);
+  int signalRed = filterRed.EMAFilter(Red);
+  debug.print(">Signal Red:");
+  debug.println(signalRed); 
+
+
+ ////////////////TESTING HR BEGIN
+
   int freqhr = featureIR.Frequhr(signalIR); 
   Serial.print(">freqhr:");
   Serial.println(freqhr);
@@ -108,5 +111,5 @@ void loop()
   int intIR = featureIR.Intensityhr(signalIR);
   Serial.print(">intIR:");
   Serial.println(intIR);
-*/
+
 }
