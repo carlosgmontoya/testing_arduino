@@ -110,8 +110,8 @@ class SignalToolbox{
         void Averagehr(int filter3);
         int GetFreqhr();
         int GetAvehr();
-        int Amplitudehr(int filter4);
-        int Intensityhr(int filter5);
+        int GetAmphr();
+        int GetInthr();
 };
 
 #endif

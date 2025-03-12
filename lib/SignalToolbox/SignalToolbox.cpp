@@ -50,9 +50,11 @@ void SignalToolbox::Averagehr(int filter3){
     //Peak and valley detector
     xp = filter3;
 
-    // Valley (cambia a pendiente positiva)
+    // VALLE (cambia a pendiente positiva)
     if(xp - xp_1 > 0 && xp_1 - xp_2 <= 0)
     {
+
+        // INCIA VALLE Frecuencia instantánea y promedio
         if(contphr >= 1)
         {
             endphr = millis();
@@ -73,12 +75,36 @@ void SignalToolbox::Averagehr(int filter3){
             contphr = 0;
             startphr = millis();
         }
+
+        // FINALIZA VALLE Frecuencia instantánea y promedio
+
+        // INICIA VALLE Amplitud e Intensidad
+        pahr = xp_1;
+        contra++;
+        // FINALIZA VALLE Amplitud
+
     }    
     
-    // Pico (cambia a pendiente negativa)
+    // PICO (cambia a pendiente negativa)
     if(xp - xp_1 <0 && xp_1 - xp_2 >= 0)
     {
+
+        // INICIA PICO Frecuencia instantánea y promedio
         contphr++;
+        // FINALIZA PICO Frecuencia instantánea y promedio
+
+        // INICIA PICO Amplitud e Intensidad
+        if(contra >= 1)
+        {
+
+            pbhr = xp_1;
+            amphr = pbhr - pahr;
+            inthr = (pbhr + pahr)/2;
+            contra = 0;
+
+
+        }
+        // FINALIZA PICO Amplitud e Intensidad
     }
 
     xp_2 = xp_1;
@@ -91,10 +117,23 @@ int SignalToolbox::GetFreqhr()
 {
     return freqphr;
 }
+
 int SignalToolbox::GetAvehr()
 {
     return promhr;
 }
+
+int SignalToolbox::GetAmphr()
+{
+    return amphr;
+}
+int SignalToolbox::GetInthr()
+{
+    return inthr;
+}
+
+
+/*
 int SignalToolbox::Amplitudehr(int filter4){
     this->filter4 = filter4;
 
@@ -156,3 +195,4 @@ int SignalToolbox::Intensityhr(int filter5){
     return inthr;
 
 }
+*/

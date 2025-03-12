@@ -103,11 +103,11 @@ void loop()
   Serial.println(promhr);
 
   //////////////TESTING SPO2
-  int ampIR = featureIR.Amplitudehr(signalIR);
+  int ampIR = featureIR.GetAmphr();
   Serial.print(">ampIR:");
   Serial.println(ampIR);
 
-  int intIR = featureIR.Intensityhr(signalIR);
+  int intIR = featureIR.GetInthr();
   Serial.print(">intIR:");
   Serial.println(intIR);
 
