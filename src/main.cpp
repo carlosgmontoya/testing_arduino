@@ -31,9 +31,10 @@ MAX30105 particleSensor;
 #define debug Serial //Uncomment this line if you're using an Uno or ESP
 //#define debug SerialUSB //Uncomment this line if you're using a SAMD21
 
+
+
 /*
 //EMA filter
-float EMA_ALPHA_ = 0.05;
 float EMA_ALPHA = 0.2;
 int EMA_LP = 0;
 int EMA_HP = 0;
@@ -54,11 +55,24 @@ int EMAHighPassFilter(int value)
 }
 */
 
+// HR and SPO2
 PPGfilter filterIR;
 PPGfilter filterRed;
 SignalToolbox featureIR;
 SignalToolbox featureRed;
+
+// RR
+// PPGfilter filterAmpRR;
+
+
 int SpO2 = 0;
+
+float alphaPPG = 0.6;
+int debouncePPG = 0;
+
+float alphaRR = 0.05;
+int debounceRR = 0;
+
 
 void setup()
 {
@@ -80,20 +94,24 @@ void loop()
   int IR = particleSensor.getIR();
   debug.print(">IR:");
   debug.println(IR);
-  int signalIR = filterIR.EMAFilter(IR);
-  debug.print(">Signal IR:");
+  int signalIR = filterIR.EMAFilter(IR, alphaPPG, debouncePPG);
+  debug.print(">SignalIR:");
   debug.println(signalIR);
   featureIR.SetSignal(signalIR);
 
   int Red = particleSensor.getRed();
   debug.print(">Red:");
   debug.println(Red);
-  int signalRed = filterRed.EMAFilter(Red);
-  debug.print(">Signal Red:");
+  int signalRed = filterRed.EMAFilter(Red, alphaPPG, debouncePPG);
+  debug.print(">SignalRed:");
   debug.println(signalRed); 
   featureRed.SetSignal(signalRed);
 
- //////////////// HR 
+  //////////////// HR from IR
+  int periodhr = featureIR.GetPeriod();
+  Serial.print(">periodhr:");
+  Serial.println(periodhr);
+
   int freqhr = featureIR.GetFreq();
   Serial.print(">freqhr:");
   Serial.println(freqhr);
@@ -101,6 +119,14 @@ void loop()
   int promhr = featureIR.GetAve();
   Serial.print(">promhr:");
   Serial.println(promhr);
+
+  int valleyhr = featureIR.GetValley();
+  Serial.print(">valleyhr:");
+  Serial.println(valleyhr);
+
+  int peakhr = featureIR.GetPeak();
+  Serial.print(">peakhr:");
+  Serial.println(peakhr);
 
   ////////////// SPO2
   int ampIR = featureIR.GetAmp();
@@ -135,5 +161,15 @@ void loop()
   }
   Serial.print(">SpO2:");
   Serial.println(SpO2);  
+
+/*
+  ////////////// RR from IR
+  int signalAmpRR = filterAmpRR.EMAFilter(ampIR, alphaRR, debounceRR);
+  debug.print(">SignalAmpRR:");
+  debug.println(signalAmpRR);
+  featureIR.SetSignal(signalAmpRR);
+*/
+
+
 
 }

@@ -113,6 +113,11 @@ void SignalToolbox::SetSignal(int filter3){
 //    return promhr;
 }
 
+int SignalToolbox::GetPeriod()
+{
+    return periodphr;
+}
+
 int SignalToolbox::GetFreq()
 {
     return freqphr;
@@ -127,11 +132,21 @@ int SignalToolbox::GetAmp()
 {
     return amphr;
 }
+
 int SignalToolbox::GetInt()
 {
     return inthr;
 }
 
+int SignalToolbox::GetValley()
+{
+    return pahr;
+}
+
+int SignalToolbox::GetPeak()
+{
+    return pbhr;
+}
 
 /*
 int SignalToolbox::Amplitudehr(int filter4){

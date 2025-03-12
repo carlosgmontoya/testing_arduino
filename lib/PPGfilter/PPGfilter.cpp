@@ -10,11 +10,13 @@ PPGfilter::~PPGfilter(){
 
 }
 
-int PPGfilter::EMAFilter(int signal){
+int PPGfilter::EMAFilter(int signal, float ema_alpha_, unsigned long debounceDelay){
     this->signal = signal;
+    this->ema_alpha_ = ema_alpha_;
+    this->debounceDelay = debounceDelay;
 
     // Low pass
-    EMA_LP_ = EMA_ALPHA_ * signal + (1 - EMA_ALPHA_) * EMA_LP_;
+    EMA_LP_ = ema_alpha_ * signal + (1 - ema_alpha_) * EMA_LP_;
     // return EMA_LP_;
 
     // High pass

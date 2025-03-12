@@ -108,10 +108,13 @@ class SignalToolbox{
         void begin();
 //        int Frequhr(int filter2);
         void SetSignal(int filter3);
+        int GetPeriod();
         int GetFreq();
         int GetAve();
         int GetAmp();
         int GetInt();
+        int GetPeak();
+        int GetValley();
 };
 
 #endif

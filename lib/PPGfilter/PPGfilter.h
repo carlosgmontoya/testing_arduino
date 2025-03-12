@@ -6,7 +6,7 @@
 class PPGfilter{
     private:
         //EMA filter
-        float EMA_ALPHA_ = 0.6;
+        float ema_alpha_;
         int EMA_LP = 0;
         int EMA_HP = 0;
         int EMA_LP_ = 0;
@@ -15,12 +15,12 @@ class PPGfilter{
         int xf_2 = 0;
         int contf = 0;
         unsigned long lastDebounceTime = 0;
-        unsigned long debounceDelay = 50;
+        unsigned long debounceDelay;
         int signal;
     public:
         PPGfilter();
         ~PPGfilter();
-        int EMAFilter(int signal);
+        int EMAFilter(int, float, unsigned long);
 };
 
 #endif
