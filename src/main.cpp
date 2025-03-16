@@ -20,17 +20,17 @@ int SpO2 = 0;
 float alphaPPG = 0.6;
 int debouncePPG = 10;
 
-int N=128;
-int data[128];
-int A=1;
-int i=0;
-float r=2*PI/N;
-int real=0;
-int imag=0;
-int sumReal=0;
-int sumImag=0;
-int bin=0;
-int binmax=0;
+//int N=128;
+//int data[128];
+//int A=1;
+//int i=0;
+//float r=2*PI/N;
+//int real=0;
+//int imag=0;
+//int sumReal=0;
+//int sumImag=0;
+//int bin=0;
+//int binmax=0;
 int va=0;
 int va_1=0;
 int va_2=0;
@@ -70,11 +70,11 @@ void loop()
   featureIR.SetSignal(signalIR);
 
   int Red = particleSensor.getRed();
-  //debug.print(">Red:");
-  //debug.println(Red);
+  debug.print(">Red:");
+  debug.println(Red);
   int signalRed = filterRed.EMAFilter(Red, alphaPPG, debouncePPG);
-  //debug.print(">SignalRed:");
-  //debug.println(signalRed); 
+  debug.print(">SignalRed:");
+  debug.println(signalRed); 
   featureRed.SetSignal(signalRed);
 
   
@@ -84,9 +84,9 @@ void loop()
   //Serial.print(">periodhr:");
   //Serial.println(periodhr);
 
-  int freqhr = featureIR.GetFreq();
-  Serial.print(">freqhr:");
-  Serial.println(freqhr);
+  //int freqhr = featureIR.GetFreq();
+  //Serial.print(">freqhr:");
+  //Serial.println(freqhr);
 
   int promhr = featureIR.GetAve();
   Serial.print(">promhr:");
@@ -115,7 +115,7 @@ void loop()
 
   if(ampRed > 0 && intIR >0 && ampIR > 0 && intIR >0)
   {
-    float R = (float)(ampRed * intIR)/(intRed*ampIR);
+    float R = (float)((ampRed+400) * intIR)/(intRed*(ampIR+700));
     Serial.print(">R:");
     Serial.println(R);  
  
@@ -138,7 +138,7 @@ void loop()
   Serial.print(">valleyhr:");
   Serial.println(valleyhr);
 
-  va=valleyhr;
+  va = 0.2 * valleyhr + (1 - 0.2) * va;
 
   if(va!=va_1){
 
