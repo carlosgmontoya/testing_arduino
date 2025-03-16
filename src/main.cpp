@@ -1,8 +1,89 @@
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
 #include <Wire.h>
 #include "MAX30105.h"
 #include "PPGfilter.h"
 #include "SignalToolbox.h"
+
+const char* ssid = "LAPTOP 9542";
+const char* password = "43z21Z8!";
+const char* mqtt_server = "test.mosquitto.org";
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+unsigned long lastMsg = 0;
+#define MSG_BUFFER_SIZE	(50)
+char msg[MSG_BUFFER_SIZE];
+int value = 0;
+
+void setup_wifi() {
+
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  randomSeed(micros());
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+
+  // Switch on the LED if an 1 was received as first character
+  if ((char)payload[0] == '1') {
+    digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
+    // but actually the LED is on; this is because
+    // it is active low on the ESP-01)
+  } else {
+    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
+  }
+
+}
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "ESP8266Client-";
+    clientId += String(random(0xffff), HEX);
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      client.publish("monitor/outTopic", "Connected");
+      // ... and resubscribe
+      client.subscribe("inTopic");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
 
 MAX30105 particleSensor;
 
@@ -55,6 +136,10 @@ void setup()
   }
 
   particleSensor.setup(); //Configure sensor. Use 6.4mA for LED drive
+
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
 }
 
 void loop()
@@ -62,19 +147,19 @@ void loop()
   int startTime = micros();
 
   int IR = particleSensor.getIR();
-  debug.print(">IR:");
-  debug.println(IR);
+  //debug.print(">IR:");
+  //debug.println(IR);
   int signalIR = filterIR.EMAFilter(IR, alphaPPG, debouncePPG);
-  debug.print(">SignalIR:");
-  debug.println(signalIR);
+  //debug.print(">SignalIR:");
+  //debug.println(signalIR);
   featureIR.SetSignal(signalIR);
 
   int Red = particleSensor.getRed();
-  debug.print(">Red:");
-  debug.println(Red);
+  //debug.print(">Red:");
+  //debug.println(Red);
   int signalRed = filterRed.EMAFilter(Red, alphaPPG, debouncePPG);
-  debug.print(">SignalRed:");
-  debug.println(signalRed); 
+  //debug.print(">SignalRed:");
+  //debug.println(signalRed); 
   featureRed.SetSignal(signalRed);
 
   
@@ -116,8 +201,8 @@ void loop()
   if(ampRed > 0 && intIR >0 && ampIR > 0 && intIR >0)
   {
     float R = (float)((ampRed+400) * intIR)/(intRed*(ampIR+700));
-    Serial.print(">R:");
-    Serial.println(R);  
+//    Serial.print(">R:");
+//    Serial.println(R);  
  
     SpO2 = 110 - 25*R;
 
@@ -135,8 +220,8 @@ void loop()
 
   //  PPG Valley
   int valleyhr = featureIR.GetValley();
-  Serial.print(">valleyhr:");
-  Serial.println(valleyhr);
+  //Serial.print(">valleyhr:");
+  //Serial.println(valleyhr);
 
   va = 0.2 * valleyhr + (1 - 0.2) * va;
 
@@ -151,8 +236,8 @@ void loop()
         int periodrr = endrr - startrr;
         int freqrr = 60000 / periodrr;  
 
-        Serial.print(">freqrr:");
-        Serial.println(freqrr);
+//        Serial.print(">freqrr:");
+//        Serial.println(freqrr);
 
         // rr prom
         datarr[0]=freqrr;
@@ -181,8 +266,8 @@ void loop()
       contrr++;
     }
 
-    Serial.print(">va:");
-    Serial.println(va);
+//    Serial.print(">va:");
+//    Serial.println(va);
     
 /*  METODO DTF
 
@@ -219,6 +304,21 @@ void loop()
 
   va_2=va_1;
   va_1=va;
+
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+
+  unsigned long now = millis();
+  if (now - lastMsg > 2000) {
+    lastMsg = now;
+    ++value;
+    snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
+    Serial.print("Publish message: ");
+    Serial.println(msg);
+    client.publish("monitor/outTopic", msg);
+  }
 
   while(62500 > micros()-startTime){
   }
