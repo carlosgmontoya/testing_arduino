@@ -138,10 +138,12 @@ int SignalToolbox::GetInt()
     return inthr;
 }
 
+
 int SignalToolbox::GetValley()
 {
     return pahr;
 }
+
 
 int SignalToolbox::GetPeak()
 {
