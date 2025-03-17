@@ -41,6 +41,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
+/*
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -60,7 +61,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 
 }
-
+*/
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
@@ -72,9 +73,9 @@ void reconnect() {
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish("monitor/outTopic", "Connected");
+      //client.publish("test/monitor/data", "Connected");
       // ... and resubscribe
-      client.subscribe("inTopic");
+      //client.subscribe("inTopic");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -139,7 +140,7 @@ void setup()
 
   setup_wifi();
   client.setServer(mqtt_server, 1883);
-  client.setCallback(callback);
+//  client.setCallback(callback);
 }
 
 void loop()
@@ -147,19 +148,19 @@ void loop()
   int startTime = micros();
 
   int IR = particleSensor.getIR();
-  //debug.print(">IR:");
-  //debug.println(IR);
+  debug.print(">IR:");
+  debug.println(IR);
   int signalIR = filterIR.EMAFilter(IR, alphaPPG, debouncePPG);
-  //debug.print(">SignalIR:");
-  //debug.println(signalIR);
+  debug.print(">SignalIR:");
+  debug.println(signalIR);
   featureIR.SetSignal(signalIR);
 
   int Red = particleSensor.getRed();
-  //debug.print(">Red:");
-  //debug.println(Red);
+  debug.print(">Red:");
+  debug.println(Red);
   int signalRed = filterRed.EMAFilter(Red, alphaPPG, debouncePPG);
-  //debug.print(">SignalRed:");
-  //debug.println(signalRed); 
+  debug.print(">SignalRed:");
+  debug.println(signalRed); 
   featureRed.SetSignal(signalRed);
 
   
@@ -220,10 +221,10 @@ void loop()
 
   //  PPG Valley
   int valleyhr = featureIR.GetValley();
-  //Serial.print(">valleyhr:");
-  //Serial.println(valleyhr);
+  Serial.print(">valleyhr:");
+  Serial.println(valleyhr);
 
-  va = 0.2 * valleyhr + (1 - 0.2) * va;
+  va = 0.05 * valleyhr + (1 - 0.05) * va;
 
   if(va!=va_1){
 
@@ -236,8 +237,8 @@ void loop()
         int periodrr = endrr - startrr;
         int freqrr = 60000 / periodrr;  
 
-//        Serial.print(">freqrr:");
-//        Serial.println(freqrr);
+        Serial.print(">freqrr:");
+        Serial.println(freqrr);
 
         // rr prom
         datarr[0]=freqrr;
@@ -251,6 +252,22 @@ void loop()
         int promrr=sumarr/3;
         Serial.print(">promrr:");
         Serial.println(promrr);
+
+        // MQTT Communication
+        if (!client.connected()) {
+          reconnect();
+        }
+        client.loop();
+
+        unsigned long now = millis();
+        if (now - lastMsg > 2000) {
+          lastMsg = now;
+
+          snprintf (msg, MSG_BUFFER_SIZE, "BPM: %i, SpO2: %i, RR: %i", promhr, SpO2, promrr);
+          Serial.print("Publish message: ");
+          Serial.println(msg);
+          client.publish("test/monitor/data", msg);
+        }
 
         sumarr=0;
     
@@ -266,8 +283,8 @@ void loop()
       contrr++;
     }
 
-//    Serial.print(">va:");
-//    Serial.println(va);
+    Serial.print(">va:");
+    Serial.println(va);
     
 /*  METODO DTF
 
@@ -304,21 +321,6 @@ void loop()
 
   va_2=va_1;
   va_1=va;
-
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.loop();
-
-  unsigned long now = millis();
-  if (now - lastMsg > 2000) {
-    lastMsg = now;
-    ++value;
-    snprintf (msg, MSG_BUFFER_SIZE, "hello world #%ld", value);
-    Serial.print("Publish message: ");
-    Serial.println(msg);
-    client.publish("monitor/outTopic", msg);
-  }
 
   while(62500 > micros()-startTime){
   }
