@@ -8,14 +8,16 @@
 
 const char* ssid = "LAPTOP 9542";
 const char* password = "43z21Z8!";
-const char* mqtt_server = "test.mosquitto.org";
+const char* mqtt_server = "192.168.137.1";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 unsigned long lastMsg = 0;
-#define MSG_BUFFER_SIZE	(50)
-char msg[MSG_BUFFER_SIZE];
-int value = 0;
+#define MSG_BUFFER_SIZE	(20)
+char msg_temp[MSG_BUFFER_SIZE];
+char msg_bpm[MSG_BUFFER_SIZE];
+char msg_spo2[MSG_BUFFER_SIZE];
+char msg_rr[MSG_BUFFER_SIZE];
 
 void setup_wifi() {
 
@@ -125,6 +127,8 @@ int promrr=0;
 int contrr=0;
 int datarr[3]={0,0,0};
 
+int temp=28;
+
 void setup()
 {
   debug.begin(9600);
@@ -217,6 +221,8 @@ void loop()
   Serial.println(SpO2);  
 
 
+  ////////////// TEMP RESERVED SPACE
+
   ////////////// RR from IR
 
   //  PPG Valley
@@ -260,13 +266,26 @@ void loop()
         client.loop();
 
         unsigned long now = millis();
-        if (now - lastMsg > 2000) {
+        if (now - lastMsg > 5000) {
           lastMsg = now;
 
-          snprintf (msg, MSG_BUFFER_SIZE, "BPM: %i, SpO2: %i, RR: %i", promhr, SpO2, promrr);
-          Serial.print("Publish message: ");
-          Serial.println(msg);
-          client.publish("test/monitor/data", msg);
+          temp = 32.10;
+
+          snprintf (msg_temp, MSG_BUFFER_SIZE, "%i", temp);
+          Serial.println(msg_temp);
+          client.publish("temp", msg_temp);
+      
+          snprintf (msg_bpm, MSG_BUFFER_SIZE, "%i", promhr);
+          Serial.println(msg_bpm);
+          client.publish("bpm", msg_bpm);
+      
+          snprintf (msg_spo2, MSG_BUFFER_SIZE, "%i", SpO2);
+          Serial.println(msg_spo2);
+          client.publish("spo2", msg_spo2);
+      
+          snprintf (msg_rr, MSG_BUFFER_SIZE, "%i", promrr);
+          Serial.println(msg_rr);
+          client.publish("rr", msg_rr);
         }
 
         sumarr=0;
